@@ -1,0 +1,26 @@
+version: "3"
+services:
+  git:
+    image: gitbucket/gitbucket 
+    ports:
+      - "8080:8080"
+      - "2222:2222"  
+    restart: unless-stopped
+    environment:
+      GITBUCKET_DB_URL: "jdbc:postgresql://db/gitbucket"
+      GITBUCKET_DB_USER: "postgres"
+      GITBUCKET_DB_PASSWORD: <CHANGEME>
+      #GITBUCKET_HOST: "" ??? todo make it work using env var, weird bug, idk
+    volumes:
+      - "./datastore/media:/gitbucket"
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    environment: 
+      POSTGRES_PASSWORD: <CHANGEME>
+    volumes:
+      - "./init_db.sh:/docker-entrypoint-initdb.d/init-user-db.sh:ro"
+      - "./datastore/database:/var/lib/postgresql/data"
+
